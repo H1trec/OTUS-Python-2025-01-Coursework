@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="alert alert-warning">
+        <h4>Вы уже зарегистрированы на это событие</h4>
+        <p>Событие: {{ event.template.name }} ({{ event.date|date:"d E Y" }})</p>
+        <p>Ваш номер места: {{ registration.seat_number }}</p>
+        <hr>
+        <div class="d-flex gap-2">
+            <a href="{% url 'event_detail' event.id %}" class="btn btn-primary">
+                Вернуться к событию
+            </a>
+            <form action="{% url 'cancel_registration' event.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Отменить регистрацию</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

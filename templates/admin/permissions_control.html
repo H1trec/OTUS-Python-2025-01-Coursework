@@ -1,0 +1,28 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <h2>Настройка прав Dashboard для {{ user.username }}</h2>
+    
+    <div class="form-group">
+        <label>
+            <input type="checkbox" name="dashboard_access" 
+                   {% if user.dashboard_access %}checked{% endif %}>
+            Полный доступ к Dashboard
+        </label>
+    </div>
+
+    <div class="form-group">
+        <h3>Конкретные разрешения:</h3>
+        <label>
+            <input type="checkbox" name="can_edit_events"
+                   {% if user.dashboard_permissions.can_edit_events %}checked{% endif %}>
+            Редактирование событий
+        </label>
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>
+{% endblock %}

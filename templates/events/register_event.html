@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Register for Event{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Register for {{ event.template.name }}</h2>
+    <p>Date: {{ event.date }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to register for this event?</p>
+        <button type="submit" class="btn btn-success">Confirm Registration</button>
+        <a href="{% url 'event_detail' event.id %}" class="btn">Cancel</a>
+    </form>
+</div>
+{% endblock %}

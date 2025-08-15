@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="alert alert-info">
+        <h4>Вы добавлены в лист ожидания</h4>
+        <p>На событие "{{ event.template.name }}" ({{ event.date|date:"d E Y" }})</p>
+        <p>Ваша позиция в очереди: {{ position }}</p>
+        <hr>
+        <a href="{% url 'event_detail' event.id %}" class="btn btn-primary">
+            Вернуться к событию
+        </a>
+    </div>
+</div>
+{% endblock %}

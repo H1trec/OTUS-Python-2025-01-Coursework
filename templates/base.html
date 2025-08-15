@@ -1,0 +1,45 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Event Service{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Сервис регистрации</h1>
+    </header>
+
+    <nav>
+        <a href="{% url 'home' %}">Главная</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'user_profile' %}">Мой профиль</a>
+            {% if user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}">Панель администратора</a>
+            {% endif %}
+
+            <a href="#" onclick="document.getElementById('logout-form').submit(); return false;">Выйти</a>
+            <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+        {% else %}
+            <a href="{% url 'register_user' %}">Регистрация в системе</a>
+            <a href="{% url 'login' %}">Войти в сервис</a>
+        {% endif %}
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

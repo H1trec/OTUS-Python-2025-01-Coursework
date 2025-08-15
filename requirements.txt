@@ -1,0 +1,8 @@
+Django==5.2.4
+psycopg2-binary==2.9.10
+SQLAlchemy==2.0.42
+redis==6.3.0
+celery==5.5.3
+celery-types==0.23.0
+python-dotenv==1.1.1
+django-redis==6.0.0

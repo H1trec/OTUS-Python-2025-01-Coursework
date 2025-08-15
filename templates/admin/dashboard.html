@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+{% if messages %}
+<div class="messages">
+    {% for message in messages|slice:":1" %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<div class="card">
+    <h2>Панель управления</h2>
+    <div class="actions">
+        <a href="{% url 'create_event' %}" class="btn">Создать новое событие</a>
+        <a href="{% url 'create_template' %}" class="btn">Создать новый шаблон</a>
+    </div>
+
+    <div>
+        <h3>Предстоящие события</h3>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Название события</th>
+                        <th>Дата</th>
+                        <th>Зарегистрировано</th>
+                        <th>В листе ожидания</th>
+                        <th>Доступные действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events_page %}
+                    <tr>
+                        <td>{{ event.template.name }}</td>
+                        <td>{{ event.date|date:"d.m.Y H:i"  }}</td>
+                        <td>{{ event.registered_count }}/{{ event.max_seats }}</td>
+                        <td>{{ event.waitlist_count }}/{{ event.max_waitlist }}</td>
+                        <td>
+                            <a href="{% url 'event_detail' event.id %}" class="btn btn-sm btn-primary">Посмотреть</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Пагинация для событий -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if events_page.has_previous %}
+                    <a href="?events_page=1&users_page={{ users_page.number }}&username={{ request.GET.username }}">&laquo; первая</a>
+                    <a href="?events_page={{ events_page.previous_page_number }}&users_page={{ users_page.number }}&username={{ request.GET.username }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ events_page.number }} из {{ events_page.paginator.num_pages }}
+                </span>
+
+                {% if events_page.has_next %}
+                    <a href="?events_page={{ events_page.next_page_number }}&users_page={{ users_page.number }}&username={{ request.GET.username }}">следующая</a>
+                    <a href="?events_page={{ events_page.paginator.num_pages }}&users_page={{ users_page.number }}&username={{ request.GET.username }}">последняя &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <h3>Пользователи</h3>
+
+        <!-- Форма фильтрации -->
+    <form method="get" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="username" class="form-control" placeholder="Фильтр по логину"
+                   value="{{ request.GET.username|default:'' }}">
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary py-2 px-4" style="min-width: 100px;">
+                    Применить
+                </button>
+                {% if request.GET.username %}
+                <button type="button" onclick="window.location.href='?events_page={{ events_page.number }}&users_page=1'"
+                        class="btn btn-secondary py-2 px-4" style="min-width: 100px;">
+                    Сбросить
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Логин</th>
+                        <th>Статус</th>
+                        <th>Блокировка</th>
+                        <th>Полномочия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users_page %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>{% if user.is_blocked %}Заблокирован{% else %}Активен{% endif %}</td>
+                        <td>
+                            {% if user.is_blocked %}
+                                <form action="{% url 'unblock_user' user.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-success">Разблокировать</button>
+                                </form>
+                            {% else %}
+                                <form action="{% url 'block_user' user.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">Заблокировать</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'edit_user_permissions' user.id %}" class="btn btn-sm btn-info">
+                                Редактировать
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Пагинация для пользователей -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if users_page.has_previous %}
+                    <a href="?users_page=1&events_page={{ events_page.number }}&username={{ request.GET.username }}">&laquo; первая</a>
+                    <a href="?users_page={{ users_page.previous_page_number }}&events_page={{ events_page.number }}&username={{ request.GET.username }}">предыдущая</a>
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ users_page.number }} из {{ users_page.paginator.num_pages }}
+                </span>
+
+                {% if users_page.has_next %}
+                    <a href="?users_page={{ users_page.next_page_number }}&events_page={{ events_page.number }}&username={{ request.GET.username }}">следующая</a>
+                    <a href="?users_page={{ users_page.paginator.num_pages }}&events_page={{ events_page.number }}&username={{ request.GET.username }}">последняя &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pagination {
+        margin-top: 20px;
+    }
+    .pagination a {
+        margin: 0 5px;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        .btn {
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+    }
+
+    /* Специфичные стили для кнопок фильтра */
+    .input-group-append .btn {
+        border-radius: 0 .25rem .25rem 0;
+    }
+
+    .input-group-append .btn-secondary {
+        margin-left: -1px; /* Убираем двойную границу между кнопками */
+    }
+
+    }
+</style>
+{% endblock %}

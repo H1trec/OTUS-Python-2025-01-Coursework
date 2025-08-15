@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Добро пожаловать, {{ user.username }}</h2>
+
+    {% if user.is_blocked %}
+        <div class="alert alert-danger">
+            Ваш профиль заблокирован для регистраций на события. Обратитесь к Администратору.
+        </div>
+    {% endif %}
+
+    <h3>Ваши регистрации на события</h3>
+    {% if registrations %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Событие</th>
+                    <th>Дата</th>
+                    <th>Номер</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registrations %}
+                <tr>
+                    <td>{{ reg.event.template.name }}</td>
+                    <td>{{ reg.event.date|date:"d.m.Y H:i" }}</td>
+                    <td>{{ reg.seat_number }}</td>
+                    <td>
+                        <a href="{% url 'event_detail' reg.event.id %}" class="btn">Подробнее</a>
+                        <a href="{% url 'cancel_registration' reg.event.id %}" class="btn btn-danger">Отменить</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Вы пока не зарегистрированы ни на одно событие</p>
+    {% endif %}
+
+    <h3>Ваш лист ожидания</h3>
+    {% if waitlists %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Событие</th>
+                    <th>Дата</th>
+                    <th>Номер</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for wait in waitlists %}
+                <tr>
+                    <td>{{ wait.event.template.name }}</td>
+                    <td>{{ wait.event.date|date:"d.m.Y H:i" }}</td>
+                    <td>{{ wait.position }}</td>
+                    <td>
+                        <a href="{% url 'event_detail' wait.event.id %}" class="btn">Подробнее</a>
+                        <a href="{% url 'cancel_registration' wait.event.id %}" class="btn btn-danger">Отменить</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Вы не находитесь в листе ожидания</p>
+    {% endif %}
+</div>
+{% endblock %}
