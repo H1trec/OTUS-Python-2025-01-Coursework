@@ -40,12 +40,12 @@ class User(AbstractUser):
 
     @property
     def active_registrations(self):
-        """Active event registrations"""
+        
         return self.user_registrations.filter(event__date__gte=timezone.now())
 
     @property
     def active_waitlists(self):
-        """Current waitlist positions"""
+        
         return self.user_waitlists.filter(event__date__gte=timezone.now())
 
 class EventTemplate(models.Model):
@@ -242,4 +242,5 @@ class Waitlist(models.Model):
         if self.user.is_blocked:
             raise UserBlocked()
         if Registration.objects.filter(event=self.event, user=self.user).exists():
+
             raise ValidationError("Вы уже заргистрированы на событие")
