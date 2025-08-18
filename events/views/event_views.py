@@ -1,5 +1,6 @@
 """Представления для событий"""
 from django.contrib import messages
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from ..models import Event, Registration, Waitlist
@@ -12,7 +13,7 @@ from ..utils.exceptions import NoAvailableSeats, UserBlocked as UserBlockedExcep
 def event_list(request):
     """Список всех событий"""
     events = Event.objects.all().order_by('date')
-    return render(request, 'events/event_list.html', {'events': events})
+    return render(request, 'events/event_list.html', {'events': events, 'now': timezone.now()})
 
 def event_detail(request, event_id):
     """Детальная информация о событии"""
@@ -103,5 +104,6 @@ def cancel_registration_view(request, event_id):
 
         except Exception as e:
             messages.error(request, f"Ошибка при отмене регистрации: {str(e)}")
+
 
     return redirect('event_detail', event_id=event.id)
